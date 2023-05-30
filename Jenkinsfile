@@ -44,7 +44,7 @@ pipeline {
             environment {
                 registry = 'rafcasto'
                 credentialsId = 'docker-hub-credentials'
-                imageName = 'techdojo-ui-component'
+                imageName = 'techdojo-ui-component-qa'
             }
             steps {
                 sh "docker build -t $registry/$imageName:${env.BUILD_NUMBER} ." // Build Docker image
@@ -68,15 +68,15 @@ pipeline {
              environment {
                 registry = 'rafcasto'
                 credentialsId = 'docker-hub-credentials'
-                imageName = 'techdojo-ui-component'
+                imageName = 'techdojo-ui-component-qa'
                 tag = "${env.BUILD_NUMBER}"
             }
             steps{
                 script {
                 withEnv(["version=${env.BUILD_NUMBER}"]) {
                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
-                   sh 'kubectl delete svc storybook-svc  --kubeconfig=/root/kubconfig.yaml'
-                   sh 'kubectl delete   deployment storybook-dep --kubeconfig=/root/kubconfig.yaml'
+                   sh 'kubectl delete svc storybook-svc-qa  --kubeconfig=/root/kubconfig.yaml'
+                   sh 'kubectl delete   deployment storybook-dep-qa --kubeconfig=/root/kubconfig.yaml'
                      }       
                     sh "sed -i 's|REPO_IMAGE|${registry}/${imageName}:${tag}|' storybook-deployment.yaml"                   
                     sh "kubectl apply -f storybook-deployment.yaml  --kubeconfig=/root/kubconfig.yaml"
